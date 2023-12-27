@@ -4,7 +4,7 @@ from config import TELEGRAM_API_TOKEN
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
-def send_kawaii_instructions(message):
+def send_kawaii_instructions(message): # Це тіпа для старту
     instructions = (
         "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message. "
         "For example: /kawaii Hello, how are you? UwU"
@@ -23,10 +23,17 @@ def kawaii_command(message):
         bot.reply_to(message, "Nya~! Please provide a message after the /kawaii command. UwU")
 
 
-def make_kawaii(user_message):
+def make_kawaii(user_message: str):
     string_list = ["Nya!", "OwO", "UwU", ":3"]
     random_string = random.choice(string_list)
+    if random_string == "UwU":
+        user_message.replace("s", "w")
+        user_message.replace("l", "w")
+        user_message.replace("r", "w")
+        user_message.replace("x", "w")
     kawaii_message = user_message + " " + random_string
     return kawaii_message
 
 bot.polling(none_stop=True, interval=0)
+
+
