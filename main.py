@@ -26,7 +26,7 @@ def kawaii_command(message):
 def make_kawaii(user_message: str):
     string_list = ["Nya!", "OwO", "UwU", ":3"]
     random_string = random.choice(string_list)
-    if random_string == ("UwU" or "OwO"):
+    if random_string in ["UwU", "OwO"]:
         user_message = user_message.replace("s", "w")
         user_message = user_message.replace("l", "w")
         user_message = user_message.replace("r", "w")
