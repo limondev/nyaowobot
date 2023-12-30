@@ -9,10 +9,10 @@ bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 @bot.message_handler(commands=['start', 'help'])
 def send_kawaii_instructions(message):
     instructions = (
-        "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message. "
-        "For example: /kawaii Hello, how are you? UwU"
-        "Also, U can ask this bot for weather in your city, just type /weather followed by mane of your city :3"
-        "For example: /weather Kharkiv"
+        "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message.\n"
+        "For example: /kawaii Hello, how are you? UwU\n"
+        "Also, U can ask this bot for weather in your city, just type /weather followed by mane of your city :3\n"
+        "For example: /weather Kharkiv\n"
     )
     bot.reply_to(message, instructions)
 
