@@ -29,7 +29,7 @@ def kawaii_command(message):
 
 
 def make_kawaii(user_message: str):
-    string_list = ["Nya!", "OwO", "UwU", ":3"]
+    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~"]
     random_string = random.choice(string_list)
     if random_string in ["UwU", "OwO"]:
         user_message = user_message.replace("s", "w")
