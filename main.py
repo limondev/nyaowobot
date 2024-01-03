@@ -2,7 +2,6 @@ import telebot
 import random
 import requests
 
-
 from config import TELEGRAM_API_TOKEN, api_key
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 
@@ -67,6 +66,17 @@ def get_weather(message):
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
 
+@bot.message_handler(commands=['randomanime'])
+def random_anime_generator(message):
+    try:
+        url = f'https://api.jikan.moe/v4/random/anime'
+        response = requests.get(url)
+        randani = response.json()
+        bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
+    except Exception as e:
+        bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
+
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
+
 
