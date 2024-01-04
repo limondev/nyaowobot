@@ -12,6 +12,7 @@ def send_kawaii_instructions(message):
         "For example: /kawaii Hello, how are you? UwU\n"
         "Also, U can ask this bot for weather in your city, just type /weather followed by mane of your city :3\n"
         "For example: /weather Kharkiv\n"
+        "If you want to watch some anime, but don`t know which one exactly, you can use /randomanime OwO"
     )
     bot.reply_to(message, instructions)
 
@@ -49,16 +50,27 @@ def get_weather(message):
         if 'main' in weather_data and 'weather' in weather_data:
             main_weather = weather_data['weather'][0]['main']
             description = weather_data['weather'][0]['description']
-
+            wind_speed = weather_data['wind']['speed']
             temperature_kelvin = weather_data['main']['temp']
             feels_like_kelvin = weather_data['main']['feels_like']
 
             temperature_celsius = temperature_kelvin - 273.15
             feels_like_celsius = feels_like_kelvin - 273.15
+            emoji = ''
+            if "Clear" in main_weather:
+                emoji = "☀️"
+            elif "Clouds" in main_weather:
+                emoji = "☁️"
+            elif "Rain" in main_weather:
+                emoji = "🌧️"
+            elif "Snow" in main_weather:
+                emoji = "❄️"
 
-            bot.reply_to(message, f'The weather in {city} is {main_weather} ({description}) Nya!\n'
+
+            bot.reply_to(message, f'The weather in {city} is {main_weather} {emoji} ({description}) Nya!\n'
                                   f'Temperature: {temperature_celsius:.2f}°C! :3\n'
-                                  f'Feels like: {feels_like_celsius:.2f}°C! UwU')
+                                  f'Feels like: {feels_like_celsius:.2f}°C! UwU'
+                                  f'Wind Speed: {wind_speed} m/s! 🌬️')
         else:
             bot.reply_to(message, f'Sorry, I couldn\'t retrieve the weather information for {city}. Nya~ :(')
     except IndexError:
