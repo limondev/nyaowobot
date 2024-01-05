@@ -66,17 +66,26 @@ def get_weather(message):
             elif "Snow" in main_weather:
                 emoji = "❄️"
 
+            air_pollution_url = f'http://api.openweathermap.org/data/2.5/air_pollution?lat={weather_data["coord"]["lat"]}&lon={weather_data["coord"]["lon"]}&appid={api_key}'
+            air_pollution_response = requests.get(air_pollution_url)
+            air_pollution_data = air_pollution_response.json()
 
-            bot.reply_to(message, f'The weather in {city} is {main_weather} {emoji} ({description}) Nya!\n'
-                                  f'Temperature: {temperature_celsius:.2f}°C! :3\n'
-                                  f'Feels like: {feels_like_celsius:.2f}°C! UwU'
-                                  f'Wind Speed: {wind_speed} m/s! 🌬️')
+            if 'list' in air_pollution_data and len(air_pollution_data['list']) > 0:
+                air_quality = air_pollution_data['list'][0]['main']['aqi']
+                bot.reply_to(message, f'The weather in {city} is {main_weather} {emoji} ({description}) Nya!\n'
+                                      f'Temperature: {temperature_celsius:.2f}°C! :3\n'
+                                      f'Feels like: {feels_like_celsius:.2f}°C! UwU\n'
+                                      f'Wind Speed: {wind_speed} m/s! 🌬️\n'
+                                      f'Air Quality Index (AQI): {air_quality} OwO')
+            else:
+                bot.reply_to(message, f'Sorry, I couldn\'t retrieve the air pollution information for {city}. Nya~ :(')
         else:
             bot.reply_to(message, f'Sorry, I couldn\'t retrieve the weather information for {city}. Nya~ :(')
     except IndexError:
         bot.reply_to(message, 'Please provide a city name after the /weather command. UwU')
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
+
 
 @bot.message_handler(commands=['randomanime'])
 def random_anime_generator(message):
@@ -90,5 +99,6 @@ def random_anime_generator(message):
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
+
 
 
