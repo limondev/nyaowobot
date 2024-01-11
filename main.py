@@ -32,10 +32,8 @@ def make_kawaii(user_message: str):
     string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~"]
     random_string = random.choice(string_list)
     if random_string in ["UwU", "OwO"]:
-        user_message = user_message.replace("s", "w")
-        user_message = user_message.replace("l", "w")
-        user_message = user_message.replace("r", "w")
-        user_message = user_message.replace("x", "w")
+        for letter in ['s', 'l', 'r', 'x']:
+            user_message = user_message.replace(letter, "w")
     kawaii_message = user_message + " " + random_string
     return kawaii_message
 
@@ -75,7 +73,7 @@ def get_weather(message):
                 bot.reply_to(message, f'The weather in {city} is {main_weather} {emoji} ({description}) Nya!\n'
                                       f'Temperature: {temperature_celsius:.2f}°C! :3\n'
                                       f'Feels like: {feels_like_celsius:.2f}°C! UwU\n'
-                                      f'Wind Speed: {wind_speed} m/s! 🌬️\n'
+                                      f'Wind Speed: {wind_speed} m/s! 🚩\n'
                                       f'Air Quality Index (AQI): {air_quality} OwO')
             else:
                 bot.reply_to(message, f'Sorry, I couldn\'t retrieve the air pollution information for {city}. Nya~ :(')
@@ -96,6 +94,37 @@ def random_anime_generator(message):
         bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
+# from this part there are some silly commands for my friends
+@bot.message_handler(commands=['masshironayuki'])
+def song(message):
+    bot.reply_to(message, "https://www.youtube.com/watch?v=vKhpQTYOpUU")
+
+@bot.message_handler(commands=['serhii'])
+def maps(message):
+    random_num = random.randint(1, 100)
+    bot.reply_to(message, f"МАПИ " * random_num)
+
+@bot.message_handler(commands=['mykyta'])
+def ro(message):
+    random_num = random.randint(1, 100)
+    bot.reply_to(message, "Родичі " * random_num + "\nAnd complaining about стипендія, of course")
+@bot.message_handler(commands=['dimasik'])
+def ro(message):
+    random_num = random.randint(1, 100)
+    bot.reply_to(message, f"ПИВО " * random_num)
+
+@bot.message_handler(commands=['liliia'])
+def ipso(message):
+    messages = ["київстар лежить бо це теж один із планів цифрової трансформації?", "Київ візьмуть за 3 дні", "А хто піде відвойовувати його? У нас тупо нема кому", "Ну завтра ядеркою вʼїбати по Києву можуть", "збивають тільки в києві, інші міста хай хавають", "Ось би як в Росії, у яких склади в Сибірі, їм там все за 10-14 днів з Китаю приходить", "цікаво скіки людей лишиться в україні коли відкриють кордони", "живемо на рівні розвитку уганди якоїсь", "да їм тут 30 км пройти і вони Харків захоплять"]
+    bot.reply_to(message, f"{random.choice(messages)}")
+
+@bot.message_handler(commands=['sarcasm'])
+def ro(message):
+    bot.reply_to(message, "(САРКАЗМ!!!!!!!!!)")
+
+@bot.message_handler(commands=['ilya'])
+def ro(message):
+    bot.reply_to(message, "C# (произносится си шарп) — объектно-ориентированный язык программирования общего назначения. Разработан в 1998—2001 годах группой инженеров компании Microsoft под руководством Андерса Хейлсберга и Скотта Вильтаумота как язык разработки приложений для платформы Microsoft .NET Framework и .NET Core. Впоследствии был стандартизирован как ECMA-334 и ISO/IEC 23270. C# относится к семье языков с C-подобным синтаксисом, из них его синтаксис наиболее близок к C++ и Java. Язык имеет статическую типизацию, поддерживает полиморфизм, перегрузку операторов (в том числе операторов явного и неявного приведения типа), делегаты, атрибуты, события, переменные, свойства, обобщённые типы и методы, итераторы, анонимные функции с поддержкой замыканий, LINQ, исключения, комментарии в формате XML. Переняв многое от своих предшественников — языков C++, Delphi, Модула, Smalltalk и, в особенности, Java — С#, опираясь на практику их использования, исключает некоторые модели, зарекомендовавшие себя как проблематичные при разработке программных систем, например, C# в отличие от C++ не поддерживает множественное наследование классов (между тем допускается множественная реализация интерфейсов).")
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
