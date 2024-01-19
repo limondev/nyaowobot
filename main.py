@@ -1,6 +1,7 @@
 import telebot
 import random
 import requests
+from pprint import pprint
 
 from config import TELEGRAM_API_TOKEN, api_key
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
@@ -29,7 +30,7 @@ def kawaii_command(message):
 
 
 def make_kawaii(user_message: str):
-    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~"]
+    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3']
     random_string = random.choice(string_list)
     if random_string in ["UwU", "OwO"]:
         for letter in ['s', 'l', 'r', 'x']:
@@ -51,6 +52,8 @@ def get_weather(message):
             wind_speed = weather_data['wind']['speed']
             temperature_kelvin = weather_data['main']['temp']
             feels_like_kelvin = weather_data['main']['feels_like']
+            rain_probability = weather_data.get('rain', {}).get('1h', 0)
+            snow_probability = weather_data.get('snow', {}).get('1h', 0)
 
             temperature_celsius = temperature_kelvin - 273.15
             feels_like_celsius = feels_like_kelvin - 273.15
@@ -74,7 +77,9 @@ def get_weather(message):
                                       f'Temperature: {temperature_celsius:.2f}°C! :3\n'
                                       f'Feels like: {feels_like_celsius:.2f}°C! UwU\n'
                                       f'Wind Speed: {wind_speed} m/s! 🚩\n'
-                                      f'Air Quality Index (AQI): {air_quality} OwO')
+                                      f'Air Quality Index (AQI): {air_quality} OwO\n'
+                                      f'Rain probability in next hour: {rain_probability*100:.0f}% 💦\n'
+                                      f'Snow probability in next hour: {snow_probability*100:.0f}% ☃️')
             else:
                 bot.reply_to(message, f'Sorry, I couldn\'t retrieve the air pollution information for {city}. Nya~ :(')
         else:
@@ -94,6 +99,21 @@ def random_anime_generator(message):
         bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
+
+@bot.message_handler(commands=['translate'])
+def trans(message):
+    messageor = message.reply_to_message.text.lower()
+    english_to_ukrainian = {
+        'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н', 'u': 'г', 'i': 'ш', 'o': 'щ', 'p': 'з',
+        'a': 'ф', 's': 'і', 'd': 'в', 'f': 'а', 'g': 'п', 'h': 'р', 'j': 'о', 'k': 'л', 'l': 'д', ';': 'ж',
+        'z': 'я', 'x': 'ч', 'c': 'с', 'v': 'м', 'b': 'и', 'n': 'т', 'm': 'ь', ',': 'б', '.': 'ю', '/': '.', ' ': ' ', '[': 'х', ']': 'ї', "'": "є"
+    }
+    for letter in set(messageor):
+        if letter not in english_to_ukrainian.keys():
+            continue
+        messageor = messageor.replace(letter, english_to_ukrainian[letter])
+    bot.reply_to(message, messageor)
+
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
 def song(message):
@@ -125,6 +145,15 @@ def ro(message):
 @bot.message_handler(commands=['ilya'])
 def ro(message):
     bot.reply_to(message, "C# (произносится си шарп) — объектно-ориентированный язык программирования общего назначения. Разработан в 1998—2001 годах группой инженеров компании Microsoft под руководством Андерса Хейлсберга и Скотта Вильтаумота как язык разработки приложений для платформы Microsoft .NET Framework и .NET Core. Впоследствии был стандартизирован как ECMA-334 и ISO/IEC 23270. C# относится к семье языков с C-подобным синтаксисом, из них его синтаксис наиболее близок к C++ и Java. Язык имеет статическую типизацию, поддерживает полиморфизм, перегрузку операторов (в том числе операторов явного и неявного приведения типа), делегаты, атрибуты, события, переменные, свойства, обобщённые типы и методы, итераторы, анонимные функции с поддержкой замыканий, LINQ, исключения, комментарии в формате XML. Переняв многое от своих предшественников — языков C++, Delphi, Модула, Smalltalk и, в особенности, Java — С#, опираясь на практику их использования, исключает некоторые модели, зарекомендовавшие себя как проблематичные при разработке программных систем, например, C# в отличие от C++ не поддерживает множественное наследование классов (между тем допускается множественная реализация интерфейсов).")
+
+@bot.message_handler(commands=['rostik'])
+def ipso(message):
+    messages = ["ВОТ ТАК ОРУЖИЕ! ВСУ начали подготовку К ...", "ДОН-ДОН ИГРАЕТ с Кремлем? РАЗБОР ТУПЫХ заявлений КАДЫРОВА", "Путину стоит ОПАСАТЬСЯ ЭТОГО ⚡️ После ВЫБОРОВ 2024 на Россию ОБРУШИТСЯ...", "ТОП-5 ХИТОВ российской ПРОПАГАНДЫ: какой БРЕД несли РТЫ ПУТИНА в 2023", "Дагестанские ученые разработали очко барану"]
+    bot.reply_to(message, f"{random.choice(messages)}")
+
+
+
+
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
