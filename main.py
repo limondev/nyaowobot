@@ -103,17 +103,21 @@ def random_anime_generator(message):
 
 @bot.message_handler(commands=['translate'])
 def trans(message):
-    messageor = message.reply_to_message.text.lower()
-    english_to_ukrainian = {
-        'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н', 'u': 'г', 'i': 'ш', 'o': 'щ', 'p': 'з',
-        'a': 'ф', 's': 'і', 'd': 'в', 'f': 'а', 'g': 'п', 'h': 'р', 'j': 'о', 'k': 'л', 'l': 'д', ';': 'ж',
-        'z': 'я', 'x': 'ч', 'c': 'с', 'v': 'м', 'b': 'и', 'n': 'т', 'm': 'ь', ',': 'б', '.': 'ю', '/': '.', ' ': ' ', '[': 'х', ']': 'ї', "'": "є"
-    }
-    for letter in set(messageor):
+    answer = ""
+    english_to_ukrainian = {  "~": "₴", "!": "!", '@': '"', "#": "№", "$": ";", "%": "%", "^": ":", "&": "?", "*": "*", "(": "(",")": ")", "_": "_", "+": "+", 
+                             "Q": "Й", "W": "Ц", "E": "У", "R": "К", "T": "Е", "Y": "Н", "U": "Г", "I": "Ш", "O": "Щ", "P": "З", "{": "Х", "}": "Ї", 
+                             "A": "Ф", "S": "І", "D": "В", "F": "А", "G": "П", "H": "Р", "J": "О", "K": "Л", "L": "Д", ":": "Ж", '"': 'Є', "|": "/", 
+                             "Z": "Я", "X": "Ч", "C": "С", "V": "М", "B": "И", "N": "Т", "M": "Ь", "<": "Б", ">": "Ю", "?": ",", 
+                             "`": "'", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0", "-": "-", "=": "=", 
+                             "q": "й", "w": "ц", "e": "у", "r": "к", "t": "е", "y": "н", "u": "г", "i": "ш", "o": "щ", "p": "з", "[": "х", "]": "ї", 
+                             "a": "ф", "s": "і", "d": "в", "f": "а", "g": "п", "h": "р", "j": "о", "k": "л", "l": "д", ";": "ж", "'": "є", "\\": "\\", 
+                             "z": "я", "x": "ч", "c": "с", "v": "м", "b": "и", "n": "т", "m": "ь", ",": "б", ".": "ю", "/": "." }
+    for letter in message.reply_to_message.text:
         if letter not in english_to_ukrainian.keys():
-            continue
-        messageor = messageor.replace(letter, english_to_ukrainian[letter])
-    bot.reply_to(message, messageor)
+            answer += letter
+        else:
+            answer += english_to_ukrainian[letter]
+    bot.reply_to(message, answer)
 
 @bot.message_handler(commands=['alert'])
 def kok(message):
