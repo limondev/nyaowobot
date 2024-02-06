@@ -1,7 +1,6 @@
 import telebot
 import random
 import requests
-from pprint import pprint
 
 from config import TELEGRAM_API_TOKEN, api_key
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
@@ -11,7 +10,7 @@ def send_kawaii_instructions(message):
     instructions = (
         "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message.\n"
         "For example: /kawaii Hello, how are you? UwU\n"
-        "Also, U can ask this bot for weather in your city, just type /weather followed by mane of your city :3\n"
+        "Also, U can ask this bot for weather in your city, just type /weather followed by name of your city :3\n"
         "For example: /weather Kharkiv\n"
         "If you want to watch some anime, but don`t know which one exactly, you can use /randomanime OwO"
     )
@@ -26,7 +25,7 @@ def kawaii_command(message):
         kawaii_message = make_kawaii(user_message)
         bot.reply_to(message, kawaii_message)
     else:
-        bot.reply_to(message, "Nya~! Please provide a message after the /kawaii command. UwU")
+        bot.reply_to(message, make_kawaii("Nya~! Please provide a message after the /kawaii command."))
 
 
 def make_kawaii(user_message: str):
@@ -66,6 +65,8 @@ def get_weather(message):
                 emoji = "🌧️"
             elif "Snow" in main_weather:
                 emoji = "❄️"
+            elif "Mist" in main_weather:
+                emoji = "🌫️"
 
             air_pollution_url = f'http://api.openweathermap.org/data/2.5/air_pollution?lat={weather_data["coord"]["lat"]}&lon={weather_data["coord"]["lon"]}&appid={api_key}'
             air_pollution_response = requests.get(air_pollution_url)
@@ -114,6 +115,20 @@ def trans(message):
         messageor = messageor.replace(letter, english_to_ukrainian[letter])
     bot.reply_to(message, messageor)
 
+@bot.message_handler(commands=['alert'])
+def kok(message):
+    random_num = random.randint(5, 50)
+    alerted_messages = ["❗️", "🔉", "🆘", "🗣"]
+    command_parts = message.text.split(' ', 1)
+    if len(command_parts) > 1:
+        edited_message = command_parts[1].strip()
+    else:
+        edited_message = ""
+    for i in range(random_num):
+        edited_message += random.choice(alerted_messages)
+    bot.reply_to(message, edited_message)
+
+
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
 def song(message):
@@ -148,12 +163,8 @@ def ro(message):
 
 @bot.message_handler(commands=['rostik'])
 def ipso(message):
-    messages = ["ВОТ ТАК ОРУЖИЕ! ВСУ начали подготовку К ...", "ДОН-ДОН ИГРАЕТ с Кремлем? РАЗБОР ТУПЫХ заявлений КАДЫРОВА", "Путину стоит ОПАСАТЬСЯ ЭТОГО ⚡️ После ВЫБОРОВ 2024 на Россию ОБРУШИТСЯ...", "ТОП-5 ХИТОВ российской ПРОПАГАНДЫ: какой БРЕД несли РТЫ ПУТИНА в 2023", "Дагестанские ученые разработали очко барану"]
+    messages = ["КАКИМ будет НОВОЕ КОНТРНАСТУПЛЕНИЕ Украины? ПОДРОБНО о ПЛАНАХ ВСУ на 2024 год","ВОТ ТАК ОРУЖИЕ! ВСУ начали подготовку К ...", "ДОН-ДОН ИГРАЕТ с Кремлем? РАЗБОР ТУПЫХ заявлений КАДЫРОВА", "Путину стоит ОПАСАТЬСЯ ЭТОГО ⚡️ После ВЫБОРОВ 2024 на Россию ОБРУШИТСЯ...", "ТОП-5 ХИТОВ российской ПРОПАГАНДЫ: какой БРЕД несли РТЫ ПУТИНА в 2023", "Дагестанские ученые разработали очко барану"]
     bot.reply_to(message, f"{random.choice(messages)}")
-
-
-
-
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
