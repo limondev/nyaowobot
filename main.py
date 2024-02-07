@@ -143,11 +143,13 @@ def map_en_to_ua(text):
 def kok(message):
     random_num = random.randint(5, 50)
     alerted_messages = ["❗️", "🔉", "🆘", "🗣"]
-    command_parts = message.text.split(' ', 1)
-    if len(command_parts) > 1:
-        edited_message = command_parts[1].strip()
-    else:
-        edited_message = ""
+    command_parts = extract_arguments(message.text)
+    edited_message = ""
+    if message.reply_to_message is not None:
+        if len(message.reply_to_message.text) > 0:
+            edited_message = message.reply_to_message.text
+        elif len(command_parts) > 1:
+            edited_message = command_parts[1].strip()
     for i in range(random_num):
         edited_message += random.choice(alerted_messages)
     bot.reply_to(message, edited_message)
