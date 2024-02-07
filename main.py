@@ -23,11 +23,12 @@ def send_kawaii_instructions(message):
 
 @bot.message_handler(commands=['kawaii'])
 def kawaii_command(message):
-    command_parts = message.text.split(' ', 1)
-    if len(command_parts) > 1:
-        user_message = command_parts[1].strip()
-        kawaii_message = make_kawaii(user_message)
-        bot.reply_to(message, kawaii_message)
+    user_message = extract_arguments(message.text)
+    if message.reply_to_message is not None:
+        if len(message.reply_to_message.text) > 0:
+            bot.reply_to(message, make_kawaii(message.reply_to_message.text))
+    elif len(user_message) > 0:
+        bot.reply_to(message, make_kawaii(user_message))
     else:
         bot.reply_to(message, make_kawaii("Nya~! Please provide a message after the /kawaii command."))
 
@@ -109,12 +110,14 @@ def random_anime_generator(message):
 @bot.message_handler(commands=['translate'])
 def trans(message):
     user_message = extract_arguments(message.text)
-    if len(message.reply_to_message.text) > 0:
-        answer = map_en_to_ua(message.reply_to_message.text)
+    answer = ""
+    if message.reply_to_message is not None:
+        if len(message.reply_to_message.text) > 0:
+            answer = map_en_to_ua(message.reply_to_message.text)
     elif len(user_message) > 0:
         answer = map_en_to_ua(user_message)
     else:
-        answer = "Please provide a message to translate after the /translate command or reply to the message you want to translate"
+        answer = "Please provide a message to translate after the /translate command or reply to the message you want to translate. :3"
     bot.reply_to(message, answer)
     
 
@@ -164,6 +167,7 @@ def maps(message):
 def ro(message):
     random_num = random.randint(1, 100)
     bot.reply_to(message, "Родичі " * random_num + "\nAnd complaining about стипендія, of course")
+
 @bot.message_handler(commands=['dimasik'])
 def ro(message):
     random_num = random.randint(1, 100)
