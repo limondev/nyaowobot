@@ -24,11 +24,11 @@ def send_kawaii_instructions(message):
 @bot.message_handler(commands=['kawaii'])
 def kawaii_command(message):
     user_message = extract_arguments(message.text)
-    if message.reply_to_message is not None:
+    if message.reply_to_message.text:
         if len(message.reply_to_message.text) > 0:
             bot.reply_to(message, make_kawaii(message.reply_to_message.text))
     elif len(user_message) > 0:
-        bot.reply_to(message, make_kawaii(user_message))
+        bot.reply_to(make_kawaii(user_message))
     else:
         bot.reply_to(message, make_kawaii("Nya~! Please provide a message after the /kawaii command."))
 
@@ -152,7 +152,7 @@ def kok(message):
             edited_message = command_parts[1].strip()
     for i in range(random_num):
         edited_message += random.choice(alerted_messages)
-    bot.reply_to(message, edited_message)
+    bot.reply_to(message, edited_message.upper())
 
 
 # from this part there are some silly commands for my friends
