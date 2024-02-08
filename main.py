@@ -111,7 +111,7 @@ def random_anime_generator(message):
 def trans(message):
     user_message = extract_arguments(message.text)
     answer = ""
-    if message.reply_to_message is not None:
+    if message.reply_to_message.text:
         if len(message.reply_to_message.text) > 0:
             answer = map_en_to_ua(message.reply_to_message.text)
     elif len(user_message) > 0:
@@ -145,7 +145,7 @@ def kok(message):
     alerted_messages = ["❗️", "🔉", "🆘", "🗣"]
     command_parts = extract_arguments(message.text)
     edited_message = ""
-    if message.reply_to_message is not None:
+    if message.reply_to_message.text:
         if len(message.reply_to_message.text) > 0:
             edited_message = message.reply_to_message.text
         elif len(command_parts) > 1:
