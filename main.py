@@ -2,6 +2,7 @@ import telebot
 import random
 import requests
 
+from telebot.types import Message
 from telebot.util import extract_arguments
 from config import TELEGRAM_API_TOKEN, api_key
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
@@ -155,6 +156,14 @@ def kok(message):
         edited_message += random.choice(alert_emoji_variants)
     bot.reply_to(message, edited_message.upper())
 
+
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    global message_count
+    message_count += 1
+    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3']
+    if message_count % 45 == 0:
+        bot.reply_to(message, random.choice(string_list))
 
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
