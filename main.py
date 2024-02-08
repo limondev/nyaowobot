@@ -34,13 +34,14 @@ def kawaii_command(message):
 
 
 def make_kawaii(user_message: str):
-    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3']
-    random_string = random.choice(string_list)
-    if random_string in ["UwU", "OwO"]:
+    emoticons = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3']
+    random_emoticon = random.choice(emoticons)
+    if random_emoticon in ["UwU", "OwO"]:
         for letter in ['s', 'l', 'r', 'x']:
             user_message = user_message.replace(letter, "w")
-    kawaii_message = user_message + " " + random_string
+    kawaii_message = user_message + " " + random_emoticon
     return kawaii_message
+
 
 @bot.message_handler(commands=['weather'])
 def get_weather(message):
@@ -97,7 +98,7 @@ def get_weather(message):
 
 
 @bot.message_handler(commands=['randomanime'])
-def random_anime_generator(message):
+def get_random_anime(message):
     try:
         url = f'https://api.jikan.moe/v4/random/anime'
         response = requests.get(url)
@@ -123,7 +124,7 @@ def trans(message):
 
 # function for mapping (translating) from english keyboard layout to ukrainian
 def map_en_to_ua(text):
-    english_to_ukrainian = { "~": "₴", "!": "!", '@': '"', "#": "№", "$": ";", "%": "%", "^": ":", "&": "?", "*": "*", "(": "(",")": ")", "_": "_", "+": "+", 
+    english_to_ukrainian_layout = { "~": "₴", "!": "!", '@': '"', "#": "№", "$": ";", "%": "%", "^": ":", "&": "?", "*": "*", "(": "(",")": ")", "_": "_", "+": "+", 
                              "Q": "Й", "W": "Ц", "E": "У", "R": "К", "T": "Е", "Y": "Н", "U": "Г", "I": "Ш", "O": "Щ", "P": "З", "{": "Х", "}": "Ї", 
                              "A": "Ф", "S": "І", "D": "В", "F": "А", "G": "П", "H": "Р", "J": "О", "K": "Л", "L": "Д", ":": "Ж", '"': 'Є', "|": "/", 
                              "Z": "Я", "X": "Ч", "C": "С", "V": "М", "B": "И", "N": "Т", "M": "Ь", "<": "Б", ">": "Ю", "?": ",", 
@@ -133,7 +134,7 @@ def map_en_to_ua(text):
                              "z": "я", "x": "ч", "c": "с", "v": "м", "b": "и", "n": "т", "m": "ь", ",": "б", ".": "ю", "/": "." }
     # subfunction for mapping characters
     def map_character(char):
-        return english_to_ukrainian.get(char, char)
+        return english_to_ukrainian_layout.get(char, char)
 
     mapped = "".join(map_character(letter) for letter in text)
     return mapped
@@ -141,17 +142,17 @@ def map_en_to_ua(text):
 
 @bot.message_handler(commands=['alert'])
 def kok(message):
-    random_num = random.randint(5, 50)
-    alerted_messages = ["❗️", "🔉", "🆘", "🗣"]
-    command_parts = extract_arguments(message.text)
+    alert_emoji_count = random.randint(5, 50)
+    alert_emoji_variants = ["❗️", "🔉", "🆘", "🗣"]
+    user_message = extract_arguments(message.text)
     edited_message = ""
     if message.reply_to_message and message.reply_to_message.text:
         if len(message.reply_to_message.text) > 0:
             edited_message = message.reply_to_message.text
-        elif len(command_parts) > 1:
-            edited_message = command_parts[1].strip()
-    for i in range(random_num):
-        edited_message += random.choice(alerted_messages)
+        elif len(user_message) > 1:
+            edited_message = user_message[1].strip()
+    for i in range(alert_emoji_count):
+        edited_message += random.choice(alert_emoji_variants)
     bot.reply_to(message, edited_message.upper())
 
 
