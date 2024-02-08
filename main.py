@@ -28,7 +28,7 @@ def kawaii_command(message):
         if len(message.reply_to_message.text) > 0:
             bot.reply_to(message, make_kawaii(message.reply_to_message.text))
     elif len(user_message) > 0:
-        bot.reply_to(make_kawaii(user_message))
+        bot.reply_to(message, make_kawaii(user_message))
     else:
         bot.reply_to(message, make_kawaii("Nya~! Please provide a message after the /kawaii command."))
 
