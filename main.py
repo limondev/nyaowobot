@@ -34,18 +34,23 @@ def kawaii_command(message:Message):
             answer = message.quote.text
         elif message.reply_to_message.text:
             answer = message.reply_to_message.text
+        else:
+            answer = "Nya~! The message that you replied to doesn't have any text."
     else:
         answer = "Nya~! Please provide a message after the /kawaii command."
     bot.reply_to(message, make_kawaii(answer))
 
 def make_kawaii(user_message: str):
-    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼']
-    random_string = random.choice(string_list)
-    if random_string in ["UwU", "OwO"]:
+    emoticons = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼']
+    random_emoticon = random.choice(emoticons)
+
+    if random_emoticon in ["UwU", "OwO"]:
         for letter in ['s', 'l', 'r', 'x']:
             user_message = user_message.replace(letter, "w")
-    kawaii_message = user_message + " " + random_string
+
+    kawaii_message = user_message + " " + random_emoticon
     return kawaii_message
+
 
 @bot.message_handler(commands=['weather'])
 def get_weather(message):
@@ -95,6 +100,7 @@ def get_weather(message):
                 bot.reply_to(message, f'Sorry, I couldn\'t retrieve the air pollution information for {city}. Nya~ :(')
         else:
             bot.reply_to(message, f'Sorry, I couldn\'t retrieve the weather information for {city}. Nya~ :(')
+
     except IndexError:
         bot.reply_to(message, 'Please provide a city name after the /weather command. UwU')
     except Exception as e:
@@ -102,7 +108,7 @@ def get_weather(message):
 
 
 @bot.message_handler(commands=['randomanime'])
-def random_anime_generator(message):
+def get_random_anime(message):
     try:
         url = f'https://api.jikan.moe/v4/random/anime'
         response = requests.get(url)
@@ -110,6 +116,7 @@ def random_anime_generator(message):
         bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
+
 
 @bot.message_handler(commands=['translate'])
 def trans(message):
@@ -167,6 +174,7 @@ def kok(message):
 def create_random_alert_symbols(amount:int) -> str:
     alert_symbols = ["❗️", "🔉", "🆘", "🗣", "⚠️", "🔥"]
     return "".join(random.choice(alert_symbols) for i in range(amount))
+    
 
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
