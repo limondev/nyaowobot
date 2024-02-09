@@ -36,11 +36,13 @@ def kawaii_command(message:Message):
     bot.reply_to(message, make_kawaii(answer))
 
 def make_kawaii(user_message: str):
-    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼']
-    random_string = random.choice(string_list)
-    if random_string in ["UwU", "OwO"]:
+    emoticons = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼']
+    random_emoticon = random.choice(emoticons)
+
+    if random_emoticon in ["UwU", "OwO"]:
         for letter in ['s', 'l', 'r', 'x']:
             user_message = user_message.replace(letter, "w")
+
     kawaii_message = user_message + " " + random_emoticon
     return kawaii_message
 
@@ -93,6 +95,7 @@ def get_weather(message):
                 bot.reply_to(message, f'Sorry, I couldn\'t retrieve the air pollution information for {city}. Nya~ :(')
         else:
             bot.reply_to(message, f'Sorry, I couldn\'t retrieve the weather information for {city}. Nya~ :(')
+
     except IndexError:
         bot.reply_to(message, 'Please provide a city name after the /weather command. UwU')
     except Exception as e:
@@ -108,6 +111,7 @@ def get_random_anime(message):
         bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
+
 
 @bot.message_handler(commands=['translate'])
 def trans(message):
@@ -139,7 +143,7 @@ def map_en_to_ua(text):
                              "z": "я", "x": "ч", "c": "с", "v": "м", "b": "и", "n": "т", "m": "ь", ",": "б", ".": "ю", "/": "." }
     # subfunction for mapping characters
     def map_character(char):
-        return english_to_ukrainian_layout.get(char, char)
+        return english_to_ukrainian.get(char, char)
 
     mapped = "".join(map_character(letter) for letter in text)
     return mapped
@@ -165,6 +169,7 @@ def kok(message):
 def create_random_alert_symbols(amount:int) -> str:
     alert_symbols = ["❗️", "🔉", "🆘", "🗣", "⚠️", "🔥"]
     return "".join(random.choice(alert_symbols) for i in range(amount))
+    
 
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
