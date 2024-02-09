@@ -12,11 +12,14 @@ bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 @bot.message_handler(commands=['start', 'help'])
 def send_kawaii_instructions(message):
     instructions = (
-        "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message.\n"
+        "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message. Also you can reply and quote this command.\n"
         "For example: /kawaii Hello, how are you? UwU\n"
-        "Also, U can ask this bot for weather in your city, just type /weather followed by mane of your city :3\n"
+        "Also, U can ask this bot for weather in your city, just type /weather followed by name of your city :3\n"
         "For example: /weather Kharkiv\n"
-        "If you want to watch some anime, but don`t know which one exactly, you can use /randomanime OwO"
+        "If you want to watch some anime, but don`t know which one exactly, you can use /randomanime OwO\n"
+        "If your friend forgot to change keyboard layout and you don`t understand, what is he saying, you can always use /translate.\n"
+        "Also you can reply and quote this command.\n"
+        "If you wanna tell smth important to the chat, you can use /alert"
     )
     bot.reply_to(message, instructions)
 
