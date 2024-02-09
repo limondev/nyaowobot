@@ -31,6 +31,8 @@ def kawaii_command(message:Message):
             answer = message.quote.text
         elif message.reply_to_message.text:
             answer = message.reply_to_message.text
+        else:
+            answer = "Nya~! The message that you replied to doesn't have any text."
     else:
         answer = "Nya~! Please provide a message after the /kawaii command."
     bot.reply_to(message, make_kawaii(answer))
