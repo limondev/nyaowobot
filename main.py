@@ -164,6 +164,8 @@ def kok(message):
             answer = message.quote.text
         elif message.reply_to_message.text:
             answer = message.reply_to_message.text
+        else:
+            answer = "THERE IS NO TEXT"
     else:
         answer = ''
     symbols_amount = random.randint(5, 50)
