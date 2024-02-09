@@ -8,14 +8,13 @@ from config import TELEGRAM_API_TOKEN, api_key
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 
 
-# bot commands
 
 @bot.message_handler(commands=['start', 'help'])
 def send_kawaii_instructions(message):
     instructions = (
         "Konnichiwa~! To make your message kawaii, simply type /kawaii followed by your message.\n"
         "For example: /kawaii Hello, how are you? UwU\n"
-        "Also, U can ask this bot for weather in your city, just type /weather followed by name of your city :3\n"
+        "Also, U can ask this bot for weather in your city, just type /weather followed by mane of your city :3\n"
         "For example: /weather Kharkiv\n"
         "If you want to watch some anime, but don`t know which one exactly, you can use /randomanime OwO"
     )
@@ -23,21 +22,23 @@ def send_kawaii_instructions(message):
 
 
 @bot.message_handler(commands=['kawaii'])
-def kawaii_command(message):
+def kawaii_command(message:Message):
     user_message = extract_arguments(message.text)
-    if message.reply_to_message and message.reply_to_message.text:
-        if len(message.reply_to_message.text) > 0:
-            bot.reply_to(message, make_kawaii(message.reply_to_message.text))
-    elif len(user_message) > 0:
-        bot.reply_to(message, make_kawaii(user_message))
+    if user_message:
+        answer = user_message
+    elif message.reply_to_message:
+        if message.quote and message.quote.text:
+            answer = message.quote.text
+        elif message.reply_to_message.text:
+            answer = message.reply_to_message.text
     else:
-        bot.reply_to(message, make_kawaii("Nya~! Please provide a message after the /kawaii command."))
-
+        answer = "Nya~! Please provide a message after the /kawaii command."
+    bot.reply_to(message, make_kawaii(answer))
 
 def make_kawaii(user_message: str):
-    emoticons = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3']
-    random_emoticon = random.choice(emoticons)
-    if random_emoticon in ["UwU", "OwO"]:
+    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼']
+    random_string = random.choice(string_list)
+    if random_string in ["UwU", "OwO"]:
         for letter in ['s', 'l', 'r', 'x']:
             user_message = user_message.replace(letter, "w")
     kawaii_message = user_message + " " + random_emoticon
@@ -108,30 +109,33 @@ def get_random_anime(message):
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
 
-
 @bot.message_handler(commands=['translate'])
 def trans(message):
     user_message = extract_arguments(message.text)
-    answer = ""
-    if message.reply_to_message and message.reply_to_message.text:
-        if len(message.reply_to_message.text) > 0:
-            answer = map_en_to_ua(message.reply_to_message.text)
-    elif len(user_message) > 0:
-        answer = map_en_to_ua(user_message)
+    answer = ''
+    if user_message:
+        answer = user_message
+    elif message.reply_to_message:
+        if message.quote and message.quote.text:
+            answer = message.quote.text
+        elif message.reply_to_message.text:
+            answer = message.reply_to_message.text
+    if answer:
+        answer = map_en_to_ua(answer)
     else:
         answer = "Please provide a message to translate after the /translate command or reply to the message you want to translate. :3"
     bot.reply_to(message, answer)
-    
+
 
 # function for mapping (translating) from english keyboard layout to ukrainian
 def map_en_to_ua(text):
-    english_to_ukrainian_layout = { "~": "₴", "!": "!", '@': '"', "#": "№", "$": ";", "%": "%", "^": ":", "&": "?", "*": "*", "(": "(",")": ")", "_": "_", "+": "+", 
-                             "Q": "Й", "W": "Ц", "E": "У", "R": "К", "T": "Е", "Y": "Н", "U": "Г", "I": "Ш", "O": "Щ", "P": "З", "{": "Х", "}": "Ї", 
-                             "A": "Ф", "S": "І", "D": "В", "F": "А", "G": "П", "H": "Р", "J": "О", "K": "Л", "L": "Д", ":": "Ж", '"': 'Є', "|": "/", 
-                             "Z": "Я", "X": "Ч", "C": "С", "V": "М", "B": "И", "N": "Т", "M": "Ь", "<": "Б", ">": "Ю", "?": ",", 
-                             "`": "'", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0", "-": "-", "=": "=", 
-                             "q": "й", "w": "ц", "e": "у", "r": "к", "t": "е", "y": "н", "u": "г", "i": "ш", "o": "щ", "p": "з", "[": "х", "]": "ї", 
-                             "a": "ф", "s": "і", "d": "в", "f": "а", "g": "п", "h": "р", "j": "о", "k": "л", "l": "д", ";": "ж", "'": "є", "\\": "\\", 
+    english_to_ukrainian = { "~": "₴", "!": "!", '@': '"', "#": "№", "$": ";", "%": "%", "^": ":", "&": "?", "*": "*", "(": "(",")": ")", "_": "_", "+": "+",
+                             "Q": "Й", "W": "Ц", "E": "У", "R": "К", "T": "Е", "Y": "Н", "U": "Г", "I": "Ш", "O": "Щ", "P": "З", "{": "Х", "}": "Ї",
+                             "A": "Ф", "S": "І", "D": "В", "F": "А", "G": "П", "H": "Р", "J": "О", "K": "Л", "L": "Д", ":": "Ж", '"': 'Є', "|": "/",
+                             "Z": "Я", "X": "Ч", "C": "С", "V": "М", "B": "И", "N": "Т", "M": "Ь", "<": "Б", ">": "Ю", "?": ",",
+                             "`": "'", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0", "-": "-", "=": "=",
+                             "q": "й", "w": "ц", "e": "у", "r": "к", "t": "е", "y": "н", "u": "г", "i": "ш", "o": "щ", "p": "з", "[": "х", "]": "ї",
+                             "a": "ф", "s": "і", "d": "в", "f": "а", "g": "п", "h": "р", "j": "о", "k": "л", "l": "д", ";": "ж", "'": "є", "\\": "\\",
                              "z": "я", "x": "ч", "c": "с", "v": "м", "b": "и", "n": "т", "m": "ь", ",": "б", ".": "ю", "/": "." }
     # subfunction for mapping characters
     def map_character(char):
@@ -139,31 +143,28 @@ def map_en_to_ua(text):
 
     mapped = "".join(map_character(letter) for letter in text)
     return mapped
-    
+
 
 @bot.message_handler(commands=['alert'])
 def kok(message):
-    alert_emoji_count = random.randint(5, 50)
-    alert_emoji_variants = ["❗️", "🔉", "🆘", "🗣"]
     user_message = extract_arguments(message.text)
-    edited_message = ""
-    if message.reply_to_message and message.reply_to_message.text:
-        if len(message.reply_to_message.text) > 0:
-            edited_message = message.reply_to_message.text
-        elif len(user_message) > 1:
-            edited_message = user_message[1].strip()
-    for i in range(alert_emoji_count):
-        edited_message += random.choice(alert_emoji_variants)
-    bot.reply_to(message, edited_message.upper())
+    if user_message:
+        answer = user_message
+    elif message.reply_to_message:
+        if message.quote and message.quote.text:
+            answer = message.quote.text
+        elif message.reply_to_message.text:
+            answer = message.reply_to_message.text
+    else:
+        answer = ''
+    symbols_amount = random.randint(5, 50)
+    answer += create_random_alert_symbols(symbols_amount)
+    bot.reply_to(message, answer.upper())
 
 
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    global message_count
-    message_count += 1
-    string_list = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3']
-    if message_count % 45 == 0:
-        bot.reply_to(message, random.choice(string_list))
+def create_random_alert_symbols(amount:int) -> str:
+    alert_symbols = ["❗️", "🔉", "🆘", "🗣", "⚠️", "🔥"]
+    return "".join(random.choice(alert_symbols) for i in range(amount))
 
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
@@ -205,6 +206,13 @@ def ipso(message):
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
+
+
+
+
+
+
+
 
 
 
