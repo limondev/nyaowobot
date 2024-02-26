@@ -114,7 +114,7 @@ def get_random_anime(message):
         url = f'https://api.jikan.moe/v4/random/anime'
         response = requests.get(url)
         randani = response.json()
-        bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
+        bot.reply_to(message, f"Your random anime: {randani['data']['url']} Nya!")
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
 
