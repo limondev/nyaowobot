@@ -2,9 +2,10 @@ import telebot
 import random
 import requests
 
+from collections import defaultdict
 from telebot.types import Message
 from telebot.util import extract_arguments
-from config import TELEGRAM_API_TOKEN, api_key
+from config import TELEGRAM_API_TOKEN, api_key, pzpi_id
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 
 
@@ -41,7 +42,7 @@ def kawaii_command(message:Message):
     bot.reply_to(message, make_kawaii(answer))
 
 def make_kawaii(user_message: str):
-    emoticons = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼']
+    emoticons = ["Nya!", "OwO", "UwU", ":3", "<3", ";3", ">_<", "><", "^-^", "^^", "ᵔᵕᵔ", "nyaaaa~", ">w<", ">∇<", '>:3', ">~<", '≽^•⩊•^≼', "≧◡≦"]
     random_emoticon = random.choice(emoticons)
 
     if random_emoticon in ["UwU", "OwO"]:
@@ -215,6 +216,39 @@ def ro(message):
 def ipso(message):
     messages = ["КАКИМ будет НОВОЕ КОНТРНАСТУПЛЕНИЕ Украины? ПОДРОБНО о ПЛАНАХ ВСУ на 2024 год","ВОТ ТАК ОРУЖИЕ! ВСУ начали подготовку К ...", "ДОН-ДОН ИГРАЕТ с Кремлем? РАЗБОР ТУПЫХ заявлений КАДЫРОВА", "Путину стоит ОПАСАТЬСЯ ЭТОГО ⚡️ После ВЫБОРОВ 2024 на Россию ОБРУШИТСЯ...", "ТОП-5 ХИТОВ российской ПРОПАГАНДЫ: какой БРЕД несли РТЫ ПУТИНА в 2023", "Дагестанские ученые разработали очко барану"]
     bot.reply_to(message, f"{random.choice(messages)}")
+
+def tagi(user_ids):
+    tags = ''
+    for user_id in user_ids:
+        tags += f'{user_id}\n'
+    return tags
+
+@bot.message_handler(commands=['tag'])
+def xoxly(message):
+    bot.reply_to(message, f"Хохли, загальний збір!\n"
+                            f"{tagi(pzpi_id)}")
+
+chat_stats = defaultdict(lambda: defaultdict(int))
+
+@bot.message_handler(commands=['stats'])
+def show_stats(message):
+    chat_id = message.chat.id
+    chat_data = chat_stats[chat_id]
+    top_users = sorted(chat_data.items(), key=lambda x: x[1], reverse=True)
+    stats_text = "Топ учасників чату за кількістю повідомлень:\n"
+    for i, (user_id, message_count) in enumerate(top_users[:5], start=1):
+        user = bot.get_chat_member(chat_id, user_id).user
+        username = user.username if user.username else f"{user.first_name} {user.last_name}"
+        stats_text += f"{i}. {username} - {message_count} повідомлень\n"
+    bot.reply_to(message, stats_text)
+
+@bot.message_handler(func=lambda message: True)
+def count_messages(message):
+    chat_id = message.chat.id
+    chat_stats[chat_id][message.from_user.id] += 1
+
+
+
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
