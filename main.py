@@ -228,26 +228,6 @@ def xoxly(message):
     bot.reply_to(message, f"Хохли, загальний збір!\n"
                             f"{tagi(pzpi_id)}")
 
-chat_stats = defaultdict(lambda: defaultdict(int))
-
-@bot.message_handler(commands=['stats'])
-def show_stats(message):
-    chat_id = message.chat.id
-    chat_data = chat_stats[chat_id]
-    top_users = sorted(chat_data.items(), key=lambda x: x[1], reverse=True)
-    stats_text = "Топ учасників чату за кількістю повідомлень:\n"
-    for i, (user_id, message_count) in enumerate(top_users[:5], start=1):
-        user = bot.get_chat_member(chat_id, user_id).user
-        username = user.username if user.username else f"{user.first_name} {user.last_name}"
-        stats_text += f"{i}. {username} - {message_count} повідомлень\n"
-    bot.reply_to(message, stats_text)
-
-@bot.message_handler(func=lambda message: True)
-def count_messages(message):
-    chat_id = message.chat.id
-    chat_stats[chat_id][message.from_user.id] += 1
-
-
 
 
 if __name__ == "__main__":
