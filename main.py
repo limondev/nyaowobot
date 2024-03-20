@@ -1,12 +1,13 @@
+
 import telebot
+from telebot.util import extract_arguments
+from telebot.types import Message
 import random
 import requests
-
-from collections import defaultdict
-from telebot.types import Message
-from telebot.util import extract_arguments
-from config import TELEGRAM_API_TOKEN, api_key, pzpi_id
-bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
+import schedule
+import time
+bot = telebot.TeleBot('6261193228:AAEGiKUYyX5MfP6y_PPhtTa1zvBIrTkJKRY')
+api_key = '260734bea560cd99def075c4397fb858'
 
 
 
@@ -20,13 +21,14 @@ def send_kawaii_instructions(message):
         "If you want to watch some anime, but don`t know which one exactly, you can use /randomanime OwO\n"
         "If your friend forgot to change keyboard layout and you don`t understand, what is he saying, you can always use /translate.\n"
         "Also you can reply and quote this command.\n"
-        "If you wanna tell smth important to the chat, you can use /alert"
+        "If you wanna tell smth important to the chat, you can use /alert\n"
+        "Author: @limoncello62"
     )
     bot.reply_to(message, instructions)
 
 
 @bot.message_handler(commands=['kawaii'])
-def kawaii_command(message:Message):
+def kawaii_command(message: Message):
     user_message = extract_arguments(message.text)
     if user_message:
         answer = user_message
@@ -49,8 +51,7 @@ def make_kawaii(user_message: str):
         for letter in ['s', 'l', 'r', 'x']:
             user_message = user_message.replace(letter, "w")
 
-    kawaii_message = user_message + " " + random_emoticon
-    return kawaii_message
+    return user_message + " " + random_emoticon
 
 
 @bot.message_handler(commands=['weather'])
@@ -114,7 +115,7 @@ def get_random_anime(message):
         url = f'https://api.jikan.moe/v4/random/anime'
         response = requests.get(url)
         randani = response.json()
-        bot.reply_to(message, f"Your random anime: {randani['data']['url']} Nya!")
+        bot.reply_to(message, f"Your random anime: {randani['data']['url']}")
     except Exception as e:
         bot.reply_to(message, f'Something went wrong: {str(e)}. OwO')
 
@@ -155,7 +156,7 @@ def map_en_to_ua(text):
     return mapped
 
 
-@bot.message_handler(commands=['alert'])
+@bot.message_handler(commands=['alert', 'ALERT'])
 def kok(message):
     user_message = extract_arguments(message.text)
     if user_message:
@@ -177,7 +178,7 @@ def kok(message):
 def create_random_alert_symbols(amount:int) -> str:
     alert_symbols = ["❗️", "🔉", "🆘", "🗣", "⚠️", "🔥"]
     return "".join(random.choice(alert_symbols) for i in range(amount))
-    
+
 
 # from this part there are some silly commands for my friends
 @bot.message_handler(commands=['masshironayuki'])
@@ -223,42 +224,39 @@ def tagi(user_ids):
         tags += f'{user_id}\n'
     return tags
 
+def split_tags(user_ids, chunk_size):
+    for i in range(0, len(user_ids), chunk_size):
+        yield user_ids[i:i + chunk_size]
+
 @bot.message_handler(commands=['tag'])
 def xoxly(message):
-    bot.reply_to(message, f"Хохли, загальний збір!\n"
-                            f"{tagi(pzpi_id)}")
+    pzpi_id = ["@SALO_way", "@Novomova", "@Serhijb", "@I_maladec", "@ukrinel", "@kostiantym", "@yaelkota", "@ordinato3", "@Bulhak0v", "@limoncello62", "@j0nathan550"]
 
-chat_stats = defaultdict(lambda: defaultdict(int))
+    tagged_users_chunks = list(split_tags(pzpi_id, 5))
+    for chunk in tagged_users_chunks:
+        bot.reply_to(message, f"Хохли, загальний збір!\n{tagi(chunk)}")
 
-@bot.message_handler(commands=['stats'])
-def show_stats(message):
-    chat_id = message.chat.id
-    chat_data = chat_stats[chat_id]
-    top_users = sorted(chat_data.items(), key=lambda x: x[1], reverse=True)
-    stats_text = "Топ учасників чату за кількістю повідомлень:\n"
-    for i, (user_id, message_count) in enumerate(top_users[:5], start=1):
-        user = bot.get_chat_member(chat_id, user_id).user
-        username = user.username if user.username else f"{user.first_name} {user.last_name}"
-        stats_text += f"{i}. {username} - {message_count} повідомлень\n"
-    bot.reply_to(message, stats_text)
+@bot.message_handler(commands=["randomshurup"])
+def shurup(message: Message):
+    shurup_data = ["Шуруп з потайною головкою для твердих порід деревини TORX", "Шуруп гіпсокартонний по дереву", "Шуруп з потайною головкою з хрестоподібним шліцом", "Шуруп для гіпсокартону до дерева на стрічці оцинкований ESSVE", "Шуруп з потайною головкою для твердих порід деревини POZIDRIV (PZ)", "Шуруп з напівкруглою головкою з хрестоподібним шліцом (нержавійна сталь А2)", "Шуруп для твердого гіпсокартону на стрічці ESSVE фосфат", "Комбінований гвинт-шуруп", "Шуруп - конфірмат", "Комбінований шуруп-шуруп", "Шуруп гіпсокартонний самосверлящий", "Шуруп для зшивання гіпсокартону оцинкований", "Шуруп для легкого бетону півкруг / WAF"]
+    shurup_links = ["https://fixpro.ua/image/cache/catalog/photo5195223043339826598-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5390828558512927507-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5406747236320261296-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/735171-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A1%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B%20%D0%96%D0%B5%D0%BB,%D0%91%D0%B5%D0%BB,A2,%20%D0%A1%D1%84%D0%B5%D1%80%D0%B0%20%D0%94%D0%B5%D1%80+%D0%9C%D0%B5%D1%82/fixpro-samorez-dlya-tverdih-porod-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/333/fixpro_shurup_z_napivkug_golov_a2-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fix_pro_samorez_na_lente_phosphat-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/176-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%20%D0%B4%D0%BB%D1%8F%20%D1%85%D0%B8%D0%BC%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%B0%D0%BD%D0%BA%D0%B5%D1%80%D0%BE%D0%B2/2819708119_w640_h640_shurup-konfirmat-5-x-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/shurup-20-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/fixpro-samorez_s-burom-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fixpro-samorez-essve-1000x1000.JPG", "https://fixpro.ua/image/cache/catalog/333/fixpro_waf_dlya_leg_beton-1000x1000.jpg"]
+    shurup_dict = {shurup_data[i]: shurup_links[i] for i in range(min(len(shurup_data), len(shurup_links)))}
+    random_key = random.choice(list(shurup_dict.keys()))
+    bot.reply_to(message, f"[{random_key}]({shurup_dict[random_key]})", parse_mode='Markdown')
 
-@bot.message_handler(func=lambda message: True)
-def count_messages(message):
-    chat_id = message.chat.id
-    chat_stats[chat_id][message.from_user.id] += 1
-
+def send_random_screw():
+    shurup_data = ["Шуруп з потайною головкою для твердих порід деревини TORX", "Шуруп гіпсокартонний по дереву", "Шуруп з потайною головкою з хрестоподібним шліцом", "Шуруп для гіпсокартону до дерева на стрічці оцинкований ESSVE", "Шуруп з потайною головкою для твердих порід деревини POZIDRIV (PZ)", "Шуруп з напівкруглою головкою з хрестоподібним шліцом (нержавійна сталь А2)", "Шуруп для твердого гіпсокартону на стрічці ESSVE фосфат", "Комбінований гвинт-шуруп", "Шуруп - конфірмат", "Комбінований шуруп-шуруп", "Шуруп гіпсокартонний самосверлящий", "Шуруп для зшивання гіпсокартону оцинкований", "Шуруп для легкого бетону півкруг / WAF"]
+    shurup_links = ["https://fixpro.ua/image/cache/catalog/photo5195223043339826598-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5390828558512927507-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5406747236320261296-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/735171-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A1%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B%20%D0%96%D0%B5%D0%BB,%D0%91%D0%B5%D0%BB,A2,%20%D0%A1%D1%84%D0%B5%D1%80%D0%B0%20%D0%94%D0%B5%D1%80+%D0%9C%D0%B5%D1%82/fixpro-samorez-dlya-tverdih-porod-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/333/fixpro_shurup_z_napivkug_golov_a2-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fix_pro_samorez_na_lente_phosphat-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/176-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%20%D0%B4%D0%BB%D1%8F%20%D1%85%D0%B8%D0%BC%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%B0%D0%BD%D0%BA%D0%B5%D1%80%D0%BE%D0%B2/2819708119_w640_h640_shurup-konfirmat-5-x-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/shurup-20-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/fixpro-samorez_s-burom-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fixpro-samorez-essve-1000x1000.JPG", "https://fixpro.ua/image/cache/catalog/333/fixpro_waf_dlya_leg_beton-1000x1000.jpg"]
+    shurup_dict = {shurup_data[i]: shurup_links[i] for i in range(min(len(shurup_data), len(shurup_links)))}
+    random_key = random.choice(list(shurup_dict.keys()))
+    message = f"Шуруп дня: [{random_key}]({shurup_dict[random_key]})"
+    bot.send_message(chat_id='-1001908899737', text=message, parse_mode='Markdown')
 
 
 
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
-
-
-
-
-
-
-
-
-
-
+    while True:
+        schedule.every().day.at("12:46").do(send_random_screw)
+        schedule.run_pending()
+        time.sleep(1)
