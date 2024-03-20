@@ -6,8 +6,8 @@ import random
 import requests
 import schedule
 import time
-bot = telebot.TeleBot('6261193228:AAEGiKUYyX5MfP6y_PPhtTa1zvBIrTkJKRY')
-api_key = '260734bea560cd99def075c4397fb858'
+from config import TELEGRAM_API_TOKEN, api_key, pzpi_id
+bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 
 
 
@@ -230,8 +230,6 @@ def split_tags(user_ids, chunk_size):
 
 @bot.message_handler(commands=['tag'])
 def xoxly(message):
-    pzpi_id = ["@SALO_way", "@Novomova", "@Serhijb", "@I_maladec", "@ukrinel", "@kostiantym", "@yaelkota", "@ordinato3", "@Bulhak0v", "@limoncello62", "@j0nathan550"]
-
     tagged_users_chunks = list(split_tags(pzpi_id, 5))
     for chunk in tagged_users_chunks:
         bot.reply_to(message, f"Хохли, загальний збір!\n{tagi(chunk)}")
