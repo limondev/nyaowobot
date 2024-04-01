@@ -9,8 +9,6 @@ import time
 from config import TELEGRAM_API_TOKEN, api_key, pzpi_id
 bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
 
-
-
 @bot.message_handler(commands=['start', 'help'])
 def send_kawaii_instructions(message):
     instructions = (
@@ -132,13 +130,18 @@ def trans(message):
         elif message.reply_to_message.text:
             answer = message.reply_to_message.text
     if answer:
-        answer = map_en_to_ua(answer)
+        if is_ukrainian(answer):
+            answer = map_ua_to_en(answer)
+        else:
+            answer = map_en_to_ua(answer)
     else:
         answer = "Please provide a message to translate after the /translate command or reply to the message you want to translate. :3"
     bot.reply_to(message, answer)
 
+def is_ukrainian(text):
+    ukrainian_alphabet = set("АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя")
+    return any(char in ukrainian_alphabet for char in text)
 
-# function for mapping (translating) from english keyboard layout to ukrainian
 def map_en_to_ua(text):
     english_to_ukrainian = { "~": "₴", "!": "!", '@': '"', "#": "№", "$": ";", "%": "%", "^": ":", "&": "?", "*": "*", "(": "(",")": ")", "_": "_", "+": "+",
                              "Q": "Й", "W": "Ц", "E": "У", "R": "К", "T": "Е", "Y": "Н", "U": "Г", "I": "Ш", "O": "Щ", "P": "З", "{": "Х", "}": "Ї",
@@ -148,9 +151,25 @@ def map_en_to_ua(text):
                              "q": "й", "w": "ц", "e": "у", "r": "к", "t": "е", "y": "н", "u": "г", "i": "ш", "o": "щ", "p": "з", "[": "х", "]": "ї",
                              "a": "ф", "s": "і", "d": "в", "f": "а", "g": "п", "h": "р", "j": "о", "k": "л", "l": "д", ";": "ж", "'": "є", "\\": "\\",
                              "z": "я", "x": "ч", "c": "с", "v": "м", "b": "и", "n": "т", "m": "ь", ",": "б", ".": "ю", "/": "." }
-    # subfunction for mapping characters
+
     def map_character(char):
         return english_to_ukrainian.get(char, char)
+
+    mapped = "".join(map_character(letter) for letter in text)
+    return mapped
+
+def map_ua_to_en(text):
+    ukrainian_to_english = { "₴": "~", "!": "!", '"': '@', "№": "#", ";": "$", "%": "%", ":": "^", "?": "&", "*": "*", "(": "(",")": ")", "_": "_", "+": "+",
+                             "Й": "Q", "Ц": "W", "У": "E", "К": "R", "Е": "T", "Н": "Y", "Г": "U", "Ш": "I", "Щ": "O", "З": "P", "Х": "{", "Ї": "}",
+                             "Ф": "A", "І": "S", "В": "D", "А": "F", "П": "G", "Р": "H", "О": "J", "Л": "K", "Д": "L", "Ж": ":", "Є": '"', "/": "|",
+                             "Я": "Z", "Ч": "X", "С": "C", "М": "V", "И": "B", "Т": "N", "Ь": "M", "Б": "<", "Ю": ">", ",": "?",
+                             "'": "`", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0", "-": "-", "=": "=",
+                             "й": "q", "ц": "w", "у": "e", "к": "r", "е": "t", "н": "y", "г": "u", "ш": "i", "щ": "o", "з": "p", "х": "[", "ї": "]",
+                             "ф": "a", "і": "s", "в": "d", "а": "f", "п": "g", "р": "h", "о": "j", "л": "k", "д": "l", "ж": ";", "є": "'", "\\": "\\",
+                             "я": "z", "ч": "x", "с": "c", "м": "v", "и": "b", "т": "n", "ь": "m", "б": ",", "ю": ".", ".": "/" }
+
+    def map_character(char):
+        return ukrainian_to_english.get(char, char)
 
     mapped = "".join(map_character(letter) for letter in text)
     return mapped
@@ -200,6 +219,11 @@ def ro(message):
     random_num = random.randint(1, 100)
     bot.reply_to(message, f"ПИВО " * random_num)
 
+@bot.message_handler(commands=['timur'])
+def ro(message):
+    random_num = random.randint(1, 100)
+    bot.reply_to(message, f"Їбати баранів " * random_num)
+
 @bot.message_handler(commands=['liliia'])
 def ipso(message):
     messages = ["київстар лежить бо це теж один із планів цифрової трансформації?", "Київ візьмуть за 3 дні", "А хто піде відвойовувати його? У нас тупо нема кому", "Ну завтра ядеркою вʼїбати по Києву можуть", "збивають тільки в києві, інші міста хай хавають", "Ось би як в Росії, у яких склади в Сибірі, їм там все за 10-14 днів з Китаю приходить", "цікаво скіки людей лишиться в україні коли відкриють кордони", "живемо на рівні розвитку уганди якоїсь", "да їм тут 30 км пройти і вони Харків захоплять"]
@@ -230,31 +254,21 @@ def split_tags(user_ids, chunk_size):
 
 @bot.message_handler(commands=['tag'])
 def xoxly(message):
+    pzpi_id = ["@SALO_way", "@Novomova", "@Serhijb", "@I_maladec", "@ukrinel", "@kostiantym", "@yaelkota", "@ordinato3", "@Bulhak0v", "@limoncello62", "@j0nathan550"]
+
     tagged_users_chunks = list(split_tags(pzpi_id, 5))
     for chunk in tagged_users_chunks:
         bot.reply_to(message, f"Хохли, загальний збір!\n{tagi(chunk)}")
 
 @bot.message_handler(commands=["randomshurup"])
 def shurup(message: Message):
-    shurup_data = ["Шуруп з потайною головкою для твердих порід деревини TORX", "Шуруп гіпсокартонний по дереву", "Шуруп з потайною головкою з хрестоподібним шліцом", "Шуруп для гіпсокартону до дерева на стрічці оцинкований ESSVE", "Шуруп з потайною головкою для твердих порід деревини POZIDRIV (PZ)", "Шуруп з напівкруглою головкою з хрестоподібним шліцом (нержавійна сталь А2)", "Шуруп для твердого гіпсокартону на стрічці ESSVE фосфат", "Комбінований гвинт-шуруп", "Шуруп - конфірмат", "Комбінований шуруп-шуруп", "Шуруп гіпсокартонний самосверлящий", "Шуруп для зшивання гіпсокартону оцинкований", "Шуруп для легкого бетону півкруг / WAF"]
-    shurup_links = ["https://fixpro.ua/image/cache/catalog/photo5195223043339826598-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5390828558512927507-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5406747236320261296-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/735171-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A1%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B%20%D0%96%D0%B5%D0%BB,%D0%91%D0%B5%D0%BB,A2,%20%D0%A1%D1%84%D0%B5%D1%80%D0%B0%20%D0%94%D0%B5%D1%80+%D0%9C%D0%B5%D1%82/fixpro-samorez-dlya-tverdih-porod-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/333/fixpro_shurup_z_napivkug_golov_a2-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fix_pro_samorez_na_lente_phosphat-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/176-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%20%D0%B4%D0%BB%D1%8F%20%D1%85%D0%B8%D0%BC%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%B0%D0%BD%D0%BA%D0%B5%D1%80%D0%BE%D0%B2/2819708119_w640_h640_shurup-konfirmat-5-x-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/shurup-20-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/fixpro-samorez_s-burom-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fixpro-samorez-essve-1000x1000.JPG", "https://fixpro.ua/image/cache/catalog/333/fixpro_waf_dlya_leg_beton-1000x1000.jpg"]
+    shurup_data = ["Шуруп з потайною головкою для твердих порід деревини TORX", "Шуруп гіпсокартонний по дереву", "Шуруп з потайною головкою з хрестоподібним шліцом", "Шуруп для гіпсокартону до дерева на стрічці оцинкований ESSVE", "Шуруп з потайною головкою для твердих порід деревини POZIDRIV (PZ)", "Шуруп з напівкруглою головкою з хрестоподібним шліцом (нержавійна сталь А2)", "Шуруп для твердого гіпсокартону на стрічці ESSVE фосфат", "Комбінований гвинт-шуруп", "Шуруп - конфірмат", "Комбінований шуруп-шуруп", "Шуруп гіпсокартонний самосверлящий", "Шуруп для зшивання гіпсокартону оцинкований", "Шуруп для легкого бетону півкруг / WAF", "Шуруп гіпсокартонний по дереву ТАЙВАНЬ", "Шуруп по дереву DIN 571", "Шуруп універсальний з C-гаком", "Шуруп універсальний з O-гаком", "Шуруп універсальний з пресшайбою"]
+    shurup_links = ["https://fixpro.ua/image/cache/catalog/photo5195223043339826598-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5390828558512927507-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5406747236320261296-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/735171-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A1%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B%20%D0%96%D0%B5%D0%BB,%D0%91%D0%B5%D0%BB,A2,%20%D0%A1%D1%84%D0%B5%D1%80%D0%B0%20%D0%94%D0%B5%D1%80+%D0%9C%D0%B5%D1%82/fixpro-samorez-dlya-tverdih-porod-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/333/fixpro_shurup_z_napivkug_golov_a2-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fix_pro_samorez_na_lente_phosphat-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/176-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%20%D0%B4%D0%BB%D1%8F%20%D1%85%D0%B8%D0%BC%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%B0%D0%BD%D0%BA%D0%B5%D1%80%D0%BE%D0%B2/2819708119_w640_h640_shurup-konfirmat-5-x-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/shurup-20-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/fixpro-samorez_s-burom-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fixpro-samorez-essve-1000x1000.JPG", "https://fixpro.ua/image/cache/catalog/333/fixpro_waf_dlya_leg_beton-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5390828558512927508-1000x1000.jpg", "https://cdn.27.ua/sc--media--prod/default/58/ef/1b/58ef1b68-8ee3-449e-a48b-f68a8f26ab2f.jpg", "https://cdn.27.ua/799/b3/81/111489_1.jpeg", "https://cdn.27.ua/799/9b/ad/170925_1.jpeg", "https://cdn.27.ua/799/b1/06/110854_1.jpeg"]
     shurup_dict = {shurup_data[i]: shurup_links[i] for i in range(min(len(shurup_data), len(shurup_links)))}
     random_key = random.choice(list(shurup_dict.keys()))
     bot.reply_to(message, f"[{random_key}]({shurup_dict[random_key]})", parse_mode='Markdown')
 
-def send_random_screw():
-    shurup_data = ["Шуруп з потайною головкою для твердих порід деревини TORX", "Шуруп гіпсокартонний по дереву", "Шуруп з потайною головкою з хрестоподібним шліцом", "Шуруп для гіпсокартону до дерева на стрічці оцинкований ESSVE", "Шуруп з потайною головкою для твердих порід деревини POZIDRIV (PZ)", "Шуруп з напівкруглою головкою з хрестоподібним шліцом (нержавійна сталь А2)", "Шуруп для твердого гіпсокартону на стрічці ESSVE фосфат", "Комбінований гвинт-шуруп", "Шуруп - конфірмат", "Комбінований шуруп-шуруп", "Шуруп гіпсокартонний самосверлящий", "Шуруп для зшивання гіпсокартону оцинкований", "Шуруп для легкого бетону півкруг / WAF"]
-    shurup_links = ["https://fixpro.ua/image/cache/catalog/photo5195223043339826598-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5390828558512927507-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo5406747236320261296-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/735171-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A1%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B%20%D0%96%D0%B5%D0%BB,%D0%91%D0%B5%D0%BB,A2,%20%D0%A1%D1%84%D0%B5%D1%80%D0%B0%20%D0%94%D0%B5%D1%80+%D0%9C%D0%B5%D1%82/fixpro-samorez-dlya-tverdih-porod-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/333/fixpro_shurup_z_napivkug_golov_a2-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fix_pro_samorez_na_lente_phosphat-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/176-1000x1000.png", "https://fixpro.ua/image/cache/catalog/%20%D0%B4%D0%BB%D1%8F%20%D1%85%D0%B8%D0%BC%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%B0%D0%BD%D0%BA%D0%B5%D1%80%D0%BE%D0%B2/2819708119_w640_h640_shurup-konfirmat-5-x-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/shurup-20-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/%D1%84%D0%BE%D1%82%D0%BA%D0%B8/%D0%A8%D1%83%D1%80%D1%83%D0%BF%D1%8B-%D1%81%D0%B0%D0%BC%D0%BE%D1%80%D0%B5%D0%B7%D1%8B/%D0%A7%D0%B5%D1%80%D0%BD%D1%8B%D0%B5%20%D0%B8%20%D0%91%D0%BB%D0%BE%D1%85%D0%B0/fixpro-samorez_s-burom-1000x1000.jpg", "https://fixpro.ua/image/cache/catalog/photo_l/fixpro-samorez-essve-1000x1000.JPG", "https://fixpro.ua/image/cache/catalog/333/fixpro_waf_dlya_leg_beton-1000x1000.jpg"]
-    shurup_dict = {shurup_data[i]: shurup_links[i] for i in range(min(len(shurup_data), len(shurup_links)))}
-    random_key = random.choice(list(shurup_dict.keys()))
-    message = f"Шуруп дня: [{random_key}]({shurup_dict[random_key]})"
-    bot.send_message(chat_id='-1001908899737', text=message, parse_mode='Markdown')
-
-
-
 if __name__ == "__main__":
     bot.polling(none_stop=True, interval=0)
-    while True:
-        schedule.every().day.at("12:46").do(send_random_screw)
-        schedule.run_pending()
-        time.sleep(1)
+
+
